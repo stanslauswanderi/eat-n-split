@@ -1,13 +1,136 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+.App {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  height: 100vw;
+  margin-top: 50px;
+}
+.left {
+  width: 50%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding-top: 50px;
+  gap: 20px;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.right {
+  width: 50%;
+  padding-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(255, 236, 202);
+  width: 700px;
+  height: 600px;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: left;
+}
+
+.container-text{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 500px;
+  align-items: center;
+}
+
+.container input {
+  height: 25px;
+}
+
+.container select {
+  height: 35px;
+  width: 170px;
+  text-align: center;
+}
+ .container button {
+  margin-right: 200px;
+align-self: flex-end;
+ }
+
+
+.people{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  background-color: rgb(240, 236, 236);
+  min-width: 400px;
+  height: 80px;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+img {
+  width: 50px;
+  height: 50px;
+}
+
+button {
+  background-color: orange;
+  border-radius: 10px;
+  width: 100px;
+  height: 30px;
+}
+
+.text{
+  text-align: left;
+}
+.text p {
+  color: red;
+}
+
+.selected {
+  background-color: rgb(233, 203, 146);
+}
+
+.modal{
+  width: 42%;
+  justify-content: flex-end;
+  display: flex;
+}
+
+.friend {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(255, 236, 202);
+  border-radius: 10px;
+  width: 45%;
+  padding-bottom: 10px;
+}
+
+
+.friend-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.friend input {
+  height: 20px;
+}
+
+.friend-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 97%;
+}
+
+
+.green {
+  color: green !important;
 }
