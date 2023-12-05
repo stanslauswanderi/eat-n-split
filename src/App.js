@@ -15,6 +15,10 @@ function App() {
 
   function  addSelected  (id){
     setSelected(people.filter((item)=> item.id === id));
+
+    if(selected[0]?.id === id){
+      setSelected([]);
+    }
   }
   
   function updateSelected (id, billValue, expenseA, expenseB, pays){
@@ -29,10 +33,11 @@ function App() {
   }
 
   return (
-    <div className="App">
-    
+    <div className="App"> 
       <LeftSide people={people} addPeople={addPeople} addSelected={addSelected}/>
-      <RightSide selected={selected[0]} updateSelected={updateSelected}/>
+
+      {selected.length !== 0 ?  <RightSide selected={selected[0]} updateSelected={updateSelected}/> : null}
+     
     </div>
   );
 
@@ -52,6 +57,8 @@ function App() {
       {
         const person = {name: name, billValue: '', expenseA: '', expenseB: '', pays: true, id: Number(new Date())};
         addPeople(person);
+        //set selected
+        addSelected(person.id);
       }
       setName('');
     }
@@ -69,10 +76,10 @@ function App() {
    }
 }
  function RightSide({selected, updateSelected}){
-  const [billValue, setBillValue] = useState(selected.billValue);
-  const [ expenseA, setExpenseA] = useState(selected.expenseA);
-  const [ expenseB, setExpenseB] = useState(selected.expenseB);
-  const [select, setSelect] = useState(Number(selected.pays));
+  const [billValue, setBillValue] = useState(selected?.billValue);
+  const [ expenseA, setExpenseA] = useState(selected?.expenseA);
+  const [ expenseB, setExpenseB] = useState(selected?.expenseB);
+  const [select, setSelect] = useState(Number(selected?.pays));
 
 
 function handleSave(){
@@ -91,11 +98,11 @@ function handleOnchangeb(e){
  }
 
  useEffect(() => {
-  setExpenseA(selected.expenseA);
-  setExpenseB(selected.expenseB);
-  setBillValue(selected.billValue);
-  setSelect(Number(selected.pays));
-}, [selected.expenseA, selected.expenseB,selected.billValue,Number(selected.pays)]);
+  setExpenseA(selected?.expenseA);
+  setExpenseB(selected?.expenseB);
+  setBillValue(selected?.billValue);
+  setSelect(Number(selected?.pays));
+}, [selected?.expenseA, selected?.expenseB,selected?.billValue,Number(selected?.pays)]);
 
 
 function handleSelect(e){
@@ -105,7 +112,7 @@ function handleSelect(e){
   return (
     <div className='right'>
       <div className='container'>
-      <h1>SPLIT A BILL WITH {selected.name?.toUpperCase()}</h1>
+      <h1>SPLIT A BILL WITH {selected?.name?.toUpperCase()}</h1>
       <div className='container-text'>
         <h2>💰 Bill Value</h2>
         <input value={billValue} onChange={handleOnchangeb}/>
@@ -116,7 +123,7 @@ function handleSelect(e){
       </div>
 
       <div className='container-text'>
-        <h2>👯‍♀️ {selected.name}'s Expense</h2>
+        <h2>👯‍♀️ {selected?.name}'s Expense</h2>
         <input value={expenseB}disabled/>
       </div>
 
@@ -125,7 +132,7 @@ function handleSelect(e){
 
         <select value={select} onChange={handleSelect}>
           <option value={0}>You</option>
-          <option value={1}>{selected.name}</option>
+          <option value={1}>{selected?.name}</option>
         </select>
       </div>
       
@@ -141,14 +148,14 @@ function handleSelect(e){
 function People({details, addSelected, selected}){
 
   return(
-    <div className={`people ${selected[0].id === details.id && 'selected'}`}>
+    <div className={`people ${selected[0]?.id === details.id && 'selected'}`}  onClick={()=>addSelected(details.id)}>
       <img src={pic} alt='hello'/>
       <div className='text'>
         <h2>{details.name}</h2>
         {details.billValue !== '' ? (<p className={!details.pays ? 'green' : ''}> {details.pays ? 'You' : details.name} {details.pays ? 'owe' : 'owes'} {!details.pays ? 'you' : details.name} {details.pays ? details.expenseA : details.expenseB} bob</p>) : null
 }
       </div>
-      <button onClick={()=>addSelected(details.id)}> Select</button>
+      <button onClick={()=>addSelected(details.id)}>{selected[0]?.id !== details.id ? 'Select' : 'unselect'}</button>
     </div>
   );
 }
@@ -164,7 +171,7 @@ function Friend ({isOpen, name, addFriend, setName}){
       
       <div className='friend-text'>
         <h2>🧑‍🤝‍🧑 Friend name</h2>
-        <input value={name} onChange={(e)=>setName(e.target.value)}/>
+        <input value={name} onChange={(e)=>setName(e.target.value)}   onKeyDown={(e)=>{if (e.key === 'Enter') {addFriend()}}}/>
       </div>
        
     <div className='friend-button'>
