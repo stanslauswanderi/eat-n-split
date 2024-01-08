@@ -2,51 +2,24 @@ import { useState } from 'react';
 import './App.css';
 import pic from '../src/absa.png';
 import { useEffect } from 'react';
+import { useMain } from './context/Appcontext';
 
 function App() {
 
-  const [people, setPeople] = useState([  {name: "Stanslaus", billValue: 80, expenseA: 20, expenseB: 60, pays: true, id: 864},
-  {name: "Wanderi", billValue: 200, expenseA: 100, expenseB: 100, pays: false, id: 586}]);
-
-  const [selected, setSelected] = useState([people[0]]);
-  function addPeople(person){
-    people.push(person);
-  }
-
-  function  addSelected  (id){
-    setSelected(people.filter((item)=> item.id === id));
-
-    if(selected[0]?.id === id){
-      setSelected([]);
-    }
-  }
-  
-  function updateSelected (id, billValue, expenseA, expenseB, pays){
-   const newArray = people.map((item) =>{
-    if(item.id === id){
-      return {...item, billValue: billValue, expenseA: expenseA, expenseB: expenseB, pays: pays}
-    }else{
-      return item;
-    }
-   });
-   setPeople(newArray);
-  }
+  const {selected} = useMain();
 
   return (
     <div className="App"> 
-      <LeftSide people={people} addPeople={addPeople} addSelected={addSelected}/>
-
-      {selected.length !== 0 ?  <RightSide selected={selected[0]} updateSelected={updateSelected}/> : null}
-     
+      <LeftSide />
+      {selected.length !== 0 ?  <RightSide /> : null}
     </div>
   );
 
 
-  function LeftSide({people, addPeople, addSelected}){
-
+  function LeftSide(){
     const [friendOpen, setFriendOpen] = useState(false);
     const [name, setName] = useState('');
-
+    const {selected, dispatch, people} = useMain();
 
     function handleOpen(){
       setFriendOpen(!friendOpen);
@@ -56,15 +29,14 @@ function App() {
       if(name)
       {
         const person = {name: name, billValue: '', expenseA: '', expenseB: '', pays: true, id: Number(new Date())};
-        addPeople(person);
-        //set selected
-        addSelected(person.id);
+        dispatch({type: "addPeople", payload: person})
+        dispatch({type: "addSelected", payload: person.id})
       }
       setName('');
     }
     return (
       <div className='left'>
-        {people.map((x, i)=><People details={x} key={i} addSelected={addSelected} selected={selected}/>)}   
+        {people.map((x, i)=><People details={x} key={i} selected={selected}/>)}   
         <Friend isOpen={friendOpen} addFriend={addFriend} name={name} setName={setName} /> 
 
         <div className='modal'>
@@ -75,16 +47,16 @@ function App() {
     );
    }
 }
- function RightSide({selected, updateSelected}){
-  const [billValue, setBillValue] = useState(selected?.billValue);
-  const [ expenseA, setExpenseA] = useState(selected?.expenseA);
-  const [ expenseB, setExpenseB] = useState(selected?.expenseB);
-  const [select, setSelect] = useState(Number(selected?.pays));
-
+ function RightSide(){
+  const {dispatch, selected} = useMain();
+  const [billValue, setBillValue] = useState(selected[0]?.billValue);
+  const [ expenseA, setExpenseA] = useState(selected[0]?.expenseA);
+  const [ expenseB, setExpenseB] = useState(selected[0]?.expenseB);
+  const [select, setSelect] = useState(Number(selected[0]?.pays));
 
 function handleSave(){
-  updateSelected(selected.id, billValue, expenseA, expenseB, select);
-  // console.log()
+  dispatch({type: "updateSelected", payload: {selected: selected[0].id, billValue: billValue, expenseA: expenseA, expenseB: expenseB, pays: select}});
+
 }
 function handleOnchange(e){
  const val = Number(e.target.value);
@@ -98,11 +70,11 @@ function handleOnchangeb(e){
  }
 
  useEffect(() => {
-  setExpenseA(selected?.expenseA);
-  setExpenseB(selected?.expenseB);
-  setBillValue(selected?.billValue);
-  setSelect(Number(selected?.pays));
-}, [selected?.expenseA, selected?.expenseB,selected?.billValue,Number(selected?.pays)]);
+  setExpenseA(selected[0]?.expenseA);
+  setExpenseB(selected[0]?.expenseB);
+  setBillValue(selected[0]?.billValue);
+  setSelect(Number(selected[0]?.pays));
+}, [selected[0]?.expenseA, selected[0]?.expenseB,selected[0]?.billValue,Number(selected[0]?.pays)]);
 
 
 function handleSelect(e){
@@ -112,7 +84,7 @@ function handleSelect(e){
   return (
     <div className='right'>
       <div className='container'>
-      <h1>SPLIT A BILL WITH {selected?.name?.toUpperCase()}</h1>
+      <h1>SPLIT A BILL WITH {selected[0]?.name?.toUpperCase()}</h1>
       <div className='container-text'>
         <h2>💰 Bill Value</h2>
         <input value={billValue} onChange={handleOnchangeb}/>
@@ -123,7 +95,7 @@ function handleSelect(e){
       </div>
 
       <div className='container-text'>
-        <h2>👯‍♀️ {selected?.name}'s Expense</h2>
+        <h2>👯‍♀️ {selected[0]?.name}'s Expense</h2>
         <input value={expenseB}disabled/>
       </div>
 
@@ -132,7 +104,7 @@ function handleSelect(e){
 
         <select value={select} onChange={handleSelect}>
           <option value={0}>You</option>
-          <option value={1}>{selected?.name}</option>
+          <option value={1}>{selected[0]?.name}</option>
         </select>
       </div>
       
@@ -145,17 +117,18 @@ function handleSelect(e){
   );
  }
 
-function People({details, addSelected, selected}){
+function People({details}){
+  const {selected, dispatch, people} = useMain();
 
   return(
-    <div className={`people ${selected[0]?.id === details.id && 'selected'}`}  onClick={()=>addSelected(details.id)}>
+    <div className={`people ${selected[0]?.id === details.id && 'selected'}`}  onClick={()=> dispatch({type: "addSelected", payload: details.id})}>
       <img src={pic} alt='hello'/>
       <div className='text'>
         <h2>{details.name}</h2>
         {details.billValue !== '' ? (<p className={!details.pays ? 'green' : ''}> {details.pays ? 'You' : details.name} {details.pays ? 'owe' : 'owes'} {!details.pays ? 'you' : details.name} {details.pays ? details.expenseA : details.expenseB} bob</p>) : null
 }
       </div>
-      <button onClick={()=>addSelected(details.id)}>{selected[0]?.id !== details.id ? 'Select' : 'unselect'}</button>
+      <button onClick={()=>dispatch({type: "addSelected", payload: details.id})}>{selected[0]?.id !== details.id ? 'Select' : 'unselect'}</button>
     </div>
   );
 }
